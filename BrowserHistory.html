@@ -127,13 +127,11 @@
       }
       
       // Combine all pages visited: backStack + currentPage (excluding forwardStack)
-      // This includes the homepage since it's either in backStack or is currentPage
       let allPages = [...backStack];
       if (currentPage) {
         allPages.push(currentPage);
       }
       
-      // Display all pages in a single list (homepage will be first if it's in backStack, or last if it's currentPage)
       let historyText = "📋 Full History:\n\n";
       allPages.forEach((page, index) => {
         historyText += `${index + 1}. ${page}\n`;
