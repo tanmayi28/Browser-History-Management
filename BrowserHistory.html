@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧭 Browser History Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>🌐 Browser History Management Dashboard</header>
+
+  <div class="container">
+    <div class="input-group">
+      <input type="text" id="homepage" placeholder="Enter Homepage URL" />
+      <button class="btn-green" onclick="startBrowser()">Start Browser</button>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="urlInput" placeholder="Enter URL to visit" />
+      <button class="btn-blue" onclick="visitPage()">Visit</button>
+    </div>
+
+    <div class="input-group">
+      <button class="btn-orange" onclick="goBack()">⬅ Back</button>
+      <button class="btn-purple" onclick="goForward()">➡ Forward</button>
+      <button class="btn-teal" onclick="showHistory()">🕘 Show Full History</button>
+    </div>
+
+    <div id="currentPage" class="status">Current Page: -</div>
+
+    <div class="history">
+      <div class="stack">
+        <h3>⬅ Back History</h3>
+        <ul id="backList"></ul>
+      </div>
+      <div class="stack">
+        <h3>➡ Forward History</h3>
+        <ul id="forwardList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let backStack = [];
+    let forwardStack = [];
+    let currentPage = null;
+    let homepage = null;
+
+    function updateDisplay() {
+      document.getElementById("currentPage").textContent = 
+        currentPage ? `📄 Current Page: ${currentPage}` : "Current Page: -";
+      
+      // Update back list
+      const backList = document.getElementById("backList");
+      backList.innerHTML = "";
+      backStack.slice().reverse().forEach(page => {
+        let li = document.createElement("li");
+        li.textContent = page;
+        backList.appendChild(li);
+      });
+
+      // Update forward list
+      const forwardList = document.getElementById("forwardList");
+      forwardList.innerHTML = "";
+      forwardStack.slice().reverse().forEach(page => {
+        let li = document.createElement("li");
+        li.textContent = page;
+        forwardList.appendChild(li);
+      });
+    }
+
+    function startBrowser() {
+      homepage = document.getElementById("homepage").value.trim();
+      if (!homepage) {
+        alert("❌ Please enter a homepage URL!");
+        return;
+      }
+      backStack = [];
+      forwardStack = [];
+      currentPage = homepage;
+      updateDisplay();
+      alert(`✅ Browser started with homepage: ${homepage}`);
+    }
+
+    function visitPage() {
+      const url = document.getElementById("urlInput").value.trim();
+      if (!url) {
+        alert("⚠ Please enter a URL to visit!");
+        return;
+      }
+      if (!currentPage) {
+        alert("⚠ Please start the browser first!");
+        return;
+      }
+      backStack.push(currentPage);
+      currentPage = url;
+      forwardStack = [];
+      updateDisplay();
+      document.getElementById("urlInput").value = "";
+    }
+
+    function goBack() {
+      if (backStack.length === 0) {
+        alert("⚠ No pages in back history!");
+        return;
+      }
+      forwardStack.push(currentPage);
+      currentPage = backStack.pop();
+      updateDisplay();
+    }
+
+    function goForward() {
+      if (forwardStack.length === 0) {
+        alert("⚠ No pages in forward history!");
+        return;
+      }
+      backStack.push(currentPage);
+      currentPage = forwardStack.pop();
+      updateDisplay();
+    }
+
+    function showHistory() {
+      if (!homepage && !currentPage) {
+        alert("📋 Full History:\nNo pages visited yet.");
+        return;
+      }
+      
+      // Combine all pages visited: backStack + currentPage (excluding forwardStack)
+      // This includes the homepage since it's either in backStack or is currentPage
+      let allPages = [...backStack];
+      if (currentPage) {
+        allPages.push(currentPage);
+      }
+      
+      // Display all pages in a single list (homepage will be first if it's in backStack, or last if it's currentPage)
+      let historyText = "📋 Full History:\n\n";
+      allPages.forEach((page, index) => {
+        historyText += `${index + 1}. ${page}\n`;
+      });
+      
+      alert(historyText);
+    }
+  </script>
+</body>
+</html>
+
